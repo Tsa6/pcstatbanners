@@ -31,7 +31,7 @@ public class BannerDesign1 extends Banner {
 	private int STATISTIC_HEIGHT = 15;
 	private Color BACKGROUND = new Color(255, 255, 255);
 	private Color LEFT = new Color(204, 255, 255);
-	private Font FONT = new Font("Arial", Font.PLAIN, 60);
+	private Font FONT = new Font("Lucida Sans", Font.PLAIN, 60);
 
 	private List<Statistic> stats;
 	private boolean error = false; //Something has gone wrong, and nothing is to be trusted
