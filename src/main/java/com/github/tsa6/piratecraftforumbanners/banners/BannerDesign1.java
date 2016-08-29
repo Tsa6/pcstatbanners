@@ -7,6 +7,7 @@ import com.github.tsa6.piratecraftforumbanners.statistics.FAStatistic;
 import com.github.tsa6.piratecraftforumbanners.statistics.Statistic;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -31,7 +34,15 @@ public class BannerDesign1 extends Banner {
 	private int STATISTIC_HEIGHT = 15;
 	private Color BACKGROUND = new Color(255, 255, 255);
 	private Color LEFT = new Color(204, 255, 255);
-	private Font FONT = new Font("Lucida Sans", Font.PLAIN, 60);
+	private Font FONT;
+	{
+		try {
+			FONT = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/opensans-semibold.ttf"));
+		} catch (FontFormatException | IOException ex) {
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Problem loading OpenSans font:  {0}", ex.getMessage());
+			FONT = new Font("Arial",Font.PLAIN,60);
+		}
+	}
 
 	private List<Statistic> stats;
 	private boolean error = false; //Something has gone wrong, and nothing is to be trusted
