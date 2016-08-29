@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+	<head>
+		<title>Piratecraft Statistic Banners</title>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<style>
+			body, input {
+				font-family: "Open Sans";
+			}
+            input, select {
+                border-style: solid;
+                border-color: darkgrey;
+                border-width: 1px;
+                box-shadow: inset rgba(110, 110, 110, 0.3) 0 1px 1px 1px;
+                background-color: #fcfeff;
+                padding: 5px;
+                margin: 2px;
+                color: darkslategray;
+            }
+
+            #submit {
+                background-color: #44b0ff;
+                color: white;
+                text-align: center;
+                padding: 5px;
+                cursor:pointer;
+            }
+
+            input {
+                height: 15px;
+                color: #627474;
+                width: 200px;
+            }
+            input:focus {
+                color: darkslategray;
+            }
+            select {
+                height: 25px;
+                width: 212px;
+            }
+            label {
+                font-size: 10pt;
+            }
+            select {
+                border-radius: 0;
+            }
+            #content {
+                margin: auto;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #d9edff;
+                padding: 20px;
+            }
+            .stats-blockid, .stats-custom {
+                display: none;
+            }
+		</style>
+	</head>
+	<body>
+        <div id = content>
+            <form>
+                <label>Name</label> <br>
+                <input type = "text" placeholder = "Minecraft User Name" id= "user-field"> <br>
+                <br>
+                <label>Statistic 1</label> <br>
+                <select class = "synchronize-stats-source stats">
+                    <option value = "Playtime">Playtime</option>
+                    <option value = "Deaths">Deaths</option>
+                    <option value = "Kills">Kills</option>
+                    <option value = "Money">Money</option>
+                    <option value = "PVP Streak">PVP Streak</option>
+                    <option value = "PVP Top Streak">Top PVP Streak</option>
+                    <option value = "Blocks Broken">Blocks Broken</option>
+                    <option value = "Blocks Placed">Blocks Placed</option>
+                    <option value = "Arrows Fired">Arrows Fired</option>
+                    <option value = "Collected EXP">Collected Exp</option>
+                    <option value = "Fish Caught">Fish Caught</option>
+                    <option value = "Total Damage Taken">Damage Taken</option>
+                    <option value = "Food Eaten">Food Eaten</option>
+                    <option value = "Crafted Items">Items Crafted</option>
+                    <option value = "Eggs Thrown">Eggs Thrown</option>
+                    <option value = "Tools Broken">Tools Broken</option>
+                    <option value = "Commands">Commands Executed</option>
+                    <option value = "Items Dropped">Items Dropped</option>
+                    <option value = "Items Picked Up">Items Collected</option>
+                    <option value = "Teleports">Teleports</option>
+                    <option value = "BlockBREAKID">BlockID Broken</option>
+                    <option value = "BlockPLACEID">BlockID Placed</option>
+                    <option value = "Custom">Custom</option>
+                    <option value = "Hidden">Hidden</option>
+                </select><br>
+                <input type = "number" placeholder = "Block ID" class = "stats-blockid">
+                <input type = "text" placeholder = "Custom Text" class = "stats-custom">
+                <br>
+                <label>Statistic 2</label> <br>
+                <select class = "synchronize-stats stats">
+                </select><br>
+                <input type = "number" placeholder = "Block ID" class = "stats-blockid">
+                <input type = "text" placeholder = "Custom Text" class = "stats-custom">
+                <br>
+                <label>Statistic 3</label> <br>
+                <select class = "synchronize-stats stats">
+                </select><br>
+                <input type = "number" placeholder = "Block ID" class = "stats-blockid">
+                <input type = "text" placeholder = "Custom Text" class = "stats-custom">
+                <br>
+                <div id=submit>Generate</div>
+            </form>
+        </div>
+		<script>
+			var userField = document.getElementById("user-field");
+
+			//Synchronize statistic lists
+			var text = document.getElementsByClassName("synchronize-stats-source")[0].innerHTML;
+			var toSync = document.getElementsByClassName("synchronize-stats");
+			for (var i = 0; i < toSync.length; i++) {
+				toSync[i].innerHTML = text;
+			}
+
+			//Set onUpdate
+			var stats = document.getElementsByClassName("stats");
+			var statsBlockid = document.getElementsByClassName("stats-blockid");
+			var statsCustom = document.getElementsByClassName("stats-custom");
+			for (var i = 0; i < stats.length; i++) {
+				stats[i].index = i;
+				statsBlockid[i].index = i;
+				statsCustom[i].index = i;
+				stats[i].onchange = function () {
+					switch (this.value) {
+						case "BlockBREAKID":
+						case "BlockPLACEID":
+							statsBlockid[this.index].style.display = "block";
+							statsCustom[this.index].style.display = "none";
+							break;
+						case "Custom":
+							statsBlockid[this.index].style.display = "none";
+							statsCustom[this.index].style.display = "block";
+							break;
+						default:
+							statsBlockid[this.index].style.display = "none";
+							statsCustom[this.index].style.display = "none";
+					}
+				};
+			}
+
+			//Reset user field if red
+			userField.oninput = function () {
+				if (this.style.borderColor === "red") {
+					userField.style.backgroundColor = "#fcfeff";
+					userField.style.boxShadow = "inset rgba(110, 110, 110, 0.3) 0 1px 1px 1px";
+					userField.style.borderColor = "darkgrey";
+				}
+			}
+
+			//Generate onclick
+			document.getElementById("submit").onclick = function () {
+				var user = userField.value;
+				if (user === "") {
+					userField.style.backgroundColor = "rgb(255,220,220)";
+					userField.style.boxShadow = "inset rgba(255,0,0,0.3) 0 1px 1px 1px";
+					userField.style.borderColor = "red";
+					alert("Please fill in the \"Name\" field.");
+				} else {
+					var context;
+					if (window.location.href.match(/\/$/) === null) {
+						context = "/1";
+					} else {
+						context = "1";
+					}
+					context += "/" + user;
+					for (var i = 0; i < stats.length; i++) {
+						context += "/" + stats[i].value.replace(/ID$/, statsBlockid[i].value).replace(/Custom$/, statsCustom[i].value);
+					}
+					window.location.assign(window.location.href + encodeURI(context));
+				}
+			};
+		</script>
+	</body>
+</html>
