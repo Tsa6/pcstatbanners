@@ -7,14 +7,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class CacheManager {
 
 	private static CacheManager instance = new CacheManager();
+	private static final ScheduledExecutorService clearThread = Executors.newSingleThreadScheduledExecutor();
 
 	private final HashMap<URL, CacheEntry> cache = new HashMap<>();
 	private int refreshMillis;
@@ -80,18 +86,29 @@ public class CacheManager {
 		private final URL url;
 		private byte[] data;
 		private long lastUpdated;
+		private ScheduledFuture nextClear;
 
 		CacheEntry(URL url) {
 			this.url = url;
 		}
 
 		public InputStream get() throws IOException {
+			
+			//Reset clear countdown
+			if(nextClear != null) {
+				nextClear.cancel(false);
+			}
+			nextClear = clearThread.schedule(this::clear, 2, TimeUnit.HOURS);
+			
+			
 			if(shouldReload()) {
 				ByteArrayOutputStream buf = new ByteArrayOutputStream();
 				byte[] sbuff = new byte[2048];
 				int bytesRead;
+				URLConnection conn = url.openConnection();
+				conn.setRequestProperty("User-Agent", "TBot/1.0(Contact tsa6games@gmail.com)");
 				try(
-						InputStream is = url.openStream();
+						InputStream is = conn.getInputStream()
 				) {
 					while((bytesRead = is.read(sbuff)) > 0) {
 						buf.write(sbuff, 0, bytesRead);
@@ -104,7 +121,7 @@ public class CacheManager {
 		}
 
 		protected boolean shouldReload() {
-			return System.currentTimeMillis() - lastUpdated > refreshMillis;
+			return data == null || System.currentTimeMillis() - lastUpdated > refreshMillis;
 		}
 
 		public long getLastUpdated() {
@@ -115,6 +132,10 @@ public class CacheManager {
 			return lastUpdated + refreshMillis;
 		}
 
+		public void clear() {
+			data = null;
+			lastUpdated = 0;
+		}
 	}
 
 }
