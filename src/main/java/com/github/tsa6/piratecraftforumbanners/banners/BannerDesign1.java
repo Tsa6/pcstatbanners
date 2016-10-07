@@ -32,8 +32,6 @@ public class BannerDesign1 extends Banner {
 	private int HEIGHT = 100;
 	private int MARGIN = 5;
 	private int STATISTIC_HEIGHT = 15;
-	private Color BACKGROUND = new Color(255, 255, 255);
-	private Color LEFT = new Color(204, 255, 255);
 	private Font FONT;
 	{
 		try {
@@ -46,7 +44,6 @@ public class BannerDesign1 extends Banner {
 
 	private List<Statistic> stats;
 	private boolean error = false; //Something has gone wrong, and nothing is to be trusted
-	private long nextRefresh;
 
 	public BannerDesign1(String user, List<Statistic> stats) throws MalformedPlayernameException {
 		super(user);
@@ -80,6 +77,10 @@ public class BannerDesign1 extends Banner {
 			}
 		}
 	}
+	
+	public static BufferedImage getBackgroundImage() throws IOException {
+		return ImageIO.read(Banner.class.getResource("/backgrounds/1.png"));
+	}
 
 	protected List<Statistic> getStats() {
 		return new ArrayList<>(stats);
@@ -98,18 +99,18 @@ public class BannerDesign1 extends Banner {
 		}
 	}
 
-	private void paintBG(Graphics g) throws IOException {
-		g.drawImage(ImageIO.read(Banner.class.getResource("/backgrounds/1.png")), 0, 0, null);
+	protected void paintBG(Graphics g) throws IOException {
+		g.drawImage(getBackgroundImage(), 0, 0, null);
 	}
 
-	private void paintHeadBG(Graphics g) {
-		g.setColor(LEFT);
+	protected void paintHeadBG(Graphics g) {
+		g.setColor(getLeftColor());
 		g.fillPolygon(new int[]{0,(int)(HEIGHT*0.8),HEIGHT,0}, new int[]{0,0,HEIGHT,(int)(HEIGHT*1.1)}, 4);
 	}
 
-	private void paintName(Graphics g) {
+	protected void paintName(Graphics g) {
 		g.setFont(FONT);
-		g.setColor(Color.BLACK);
+		g.setColor(getTextColor());
 		double targetWidth = 0.8 * HEIGHT - 2 * MARGIN;
 		double targetHeight = 0.2 * HEIGHT - MARGIN;
 		g.setFont(ImageUtils.determineFontSize(g, FONT, getUser(), targetWidth, targetHeight));
@@ -117,7 +118,7 @@ public class BannerDesign1 extends Banner {
 		g.drawString(getUser(), (int) ((targetWidth - fm.getStringBounds(getUser(), g).getWidth()) / 2) + MARGIN,(int)(HEIGHT - (targetHeight - fm.getFont().getSize() * 3f / 4f)/2 - MARGIN));
 	}
 
-	private void paintHead(Graphics g) throws IOException {
+	protected void paintHead(Graphics g) throws IOException {
 		BufferedImage head;
 		int size = (int) (HEIGHT*0.8 - 2*MARGIN);
 		try {
@@ -128,7 +129,7 @@ public class BannerDesign1 extends Banner {
 		g.drawImage(head, MARGIN, MARGIN, null);
 	}
 
-	private void paintStatistics(Graphics g) throws IOException {
+	protected void paintStatistics(Graphics g) throws IOException {
 		float relativeXOrigin = (float) (HEIGHT*0.8 + MARGIN);
 		float spaceBetweenStats = (float) (HEIGHT - STATISTIC_HEIGHT * getStats().size()) / (getStats().size() + 1);
 		g.setFont(ImageUtils.determineFontSize(g, FONT, "ABCDEFGHIJKLMNOPWXYZ", Double.MAX_VALUE, STATISTIC_HEIGHT));
@@ -143,7 +144,7 @@ public class BannerDesign1 extends Banner {
 
 			//Paint background
 			if(!(text.matches("[\\s]*") && icon == null)) {
-				g.setColor(new Color(109, 109, 120, 150));
+				g.setColor(getStatisticBackgroundColor());
 				g.fillPolygon(new int[]{
 					0,
 					leftmostPoint + MARGIN * 2 + iconSize + fm.stringWidth(text),
@@ -163,8 +164,20 @@ public class BannerDesign1 extends Banner {
 			}
 		}
 	}
+	
+	protected Color getStatisticBackgroundColor() {
+		return new Color(109, 109, 120, 150);
+	}
+	
+	protected Color getLeftColor() {
+		return new Color(204, 255, 255);
+	}
+	
+	protected Color getTextColor() {
+		return Color.BLACK;
+	}
 
-	private static URL getURL(String user, int size) {
+	protected static URL getURL(String user, int size) {
 		try {
 			return new URL("http://cravatar.eu/helmhead/"+user+"/"+size+".png");
 		} catch (MalformedURLException ex) {

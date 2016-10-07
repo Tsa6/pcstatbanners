@@ -7,7 +7,7 @@
 			body, input {
 				font-family: "Open Sans";
 			}
-            input, select, .color-label {
+            input, select {
                 border-style: solid;
                 border-color: darkgrey;
                 border-width: 1px;
@@ -16,11 +16,6 @@
                 padding: 5px;
                 margin: 2px;
                 color: darkslategray;
-            }
-            
-            input[type="checkbox"] {
-                width: inherit;
-                height: inherit;
             }
 
             #submit {
@@ -31,7 +26,7 @@
                 cursor:pointer;
             }
 
-            input, .color-label {
+            input {
                 height: 15px;
                 color: #627474;
                 width: 200px;
@@ -61,18 +56,6 @@
             .stats-blockid, .stats-custom {
                 display: none;
             }
-            .color-field {
-                visibility: hidden;
-            }
-            .color-label {
-                display: inline-block;
-            }
-            
-            text {
-                font-size: 8pt;
-                margin-left: 2px;
-                color: hsl(0, 0%, 26%);
-            }
 		</style>
 	</head>
 	<body>
@@ -80,17 +63,6 @@
             <form>
                 <label>Name</label> <br>
                 <input type = "text" placeholder = "Minecraft User Name" id= "user-field"> <br>
-                <br>
-                <label>Custom Background</label> <br>
-                <input type = "text" placeholder="Use default" id= "bg-url"> <br>
-                <br>
-                <label>Left Color</label> <br>
-                <label class="color-label"><input type = "color" value = "#ccffff" id= "left-color-field" class = "color-field"></label> <br>
-                <br>
-                <label>Statistic Color</label> <br>
-                <label class="color-label"><input type = "color" value = "#6d6d78" id= "stat-color-field" class = "color-field"></label> <br>
-                <text>Transparent:  </text>
-                <input type = "checkbox" checked = "true" id = "stats-transparent"> <br>
                 <br>
                 <label>Statistic 1</label> <br>
                 <select class = "synchronize-stats-source stats">
@@ -139,19 +111,6 @@
         </div>
 		<script>
 			var userField = document.getElementById("user-field");
-
-			//Configure color fields
-			var cLabels = document.getElementsByClassName("color-label");
-			var cFields = document.getElementsByClassName("color-field");
-			for (var i = 0; i < cLabels.length; i++) {
-				cLabels[i].index = i;
-				cFields[i].index = i;
-				cFields[i].onchange = function () {
-                    cLabels[this.index].value = this.value;
-                    cLabels[this.index].style.backgroundColor = this.value;
-				};
-                cLabels[i].style.backgroundColor = cFields[i].value;
-			}
 
 			//Synchronize statistic lists
 			var text = document.getElementsByClassName("synchronize-stats-source")[0].innerHTML;
@@ -204,25 +163,14 @@
 					userField.style.borderColor = "red";
 					alert("Please fill in the \"Name\" field.");
 				} else {
-                    var bgURL = document.getElementById("bg-url").value;
-                    if(bgURL.length === 0) {
-                        bgURL = "a";
-                    }else{
-                        bgURL = btoa(bgURL);
-                    }
-                    
-                    var c1 = document.getElementById("left-color-field").value.replace(/^#/, "");
-                    var c2 = document.getElementById("stat-color-field").value.replace(/^#/, "");
-                    var trans = document.getElementById("stats-transparent").checked + 0;
-                    
 					var context;
                     var uri = window.location.href.replace(/\?[\s\S]*/, "");
 					if (uri.match(/\/$/) === null) {
-						context = "/2";
+						context = "/1";
 					} else {
-						context = "2";
+						context = "1";
 					}
-					context += "/" + user + "/" + bgURL + "/" + c1 + "/" + c2 + "/" + trans;
+					context += "/" + user;
 					for (var i = 0; i < stats.length; i++) {
 						context += "/" + stats[i].value.replace(/ID$/, statsBlockid[i].value).replace(/Custom$/, statsCustom[i].value);
 					}
